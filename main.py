@@ -38,24 +38,24 @@ class RPLidar:
             if scan.distance > 0:
                 if scan.angle < self.last_angle:
                 #     # Made one revolution
-                    sp[720] += 1
+                    sp[1440] += 1
                     #sp[0:720] = self.points.flatten().view()
                 #     return points
                     # print(points)
                     # sc.set_offsets(points)
                     # fig.canvas.draw()
                     # points = [0]*360
-                current_angle = floor(scan.angle)
+                current_angle_index = floor(scan.angle*2)
 
-                if sp[min(359, current_angle)] == 0 and sp[min(359, current_angle)+360] == 0:
-                    sp[min(359, current_angle)] = float(scan.distance) * cos(radians(current_angle))
-                    sp[min(359, current_angle) + 360] = float(scan.distance) * sin(radians(current_angle))
+                if sp[min(719, current_angle_index)] == 0 and sp[min(719, current_angle_index)+720] == 0:
+                    sp[min(719, current_angle_index)] = float(scan.distance) * cos(radians(scan.angle))
+                    sp[min(719, current_angle_index) + 720] = float(scan.distance) * sin(radians(scan.angle))
                 #
                 # self.points[min(359, current_angle)] = [float(scan.distance) * cos(radians(current_angle)),
                 #                                    float(scan.distance) * sin(radians(current_angle))]
                 else:
-                    sp[min(359, current_angle)] = (sp[min(359, current_angle)] + float(scan.distance) * cos(radians(scan.angle)))/2
-                    sp[min(359, current_angle) + 360] = (sp[min(359, current_angle) + 360] + float(scan.distance) * sin(radians(scan.angle)))/2
+                    sp[min(719, current_angle_index)] = (sp[min(719, current_angle_index)] + float(scan.distance) * cos(radians(scan.angle)))/2
+                    sp[min(719, current_angle_index) + 720] = (sp[min(719, current_angle_index) + 720] + float(scan.distance) * sin(radians(scan.angle)))/2
                 # points[min(359, floor(scan.angle))] = [new_x, new_y]
                 self.last_angle = scan.angle
 
@@ -209,8 +209,8 @@ if __name__ == "__main__":
         ax = fig.add_subplot(111)
         ax.set_xlim(-1000, 1000)
         ax.set_ylim(-1000, 1000)
-        points = np.zeros((360, 2))
-        shared_points = Array(c.c_float, 360*2 + 1)
+        points = np.zeros((720, 2))
+        shared_points = Array(c.c_float, 360*4 + 1)
         t = Process(target=rplidar.take_measurement, args=(shared_points,))
         t.start()
         sc = ax.scatter(points[:, 0], points[:, 1])
@@ -219,21 +219,21 @@ if __name__ == "__main__":
         while t.is_alive():
             # if rplidar.rev_count % 10 == 0:
             #print(shared_points)
-            points = np.array([*list(zip(shared_points[0:360], shared_points[360:720]))])
+            points = np.array([*list(zip(shared_points[0:720], shared_points[720:1440]))])
             sc.set_offsets(points)
             fig.canvas.draw()
-            if shared_points[720] > 30:
+            if shared_points[1440] > 30:
                 las = pylas.create()
                 angle_multiplier = cos(radians(current_rotation))
-                las.X = [element * angle_multiplier for element in shared_points[0:360]]
-                las.Z = shared_points[360:720]
-                las.Y = shared_points[0:360]
+                las.X = [element * angle_multiplier for element in shared_points[0:720]]
+                las.Z = shared_points[720:1440]
+                las.Y = shared_points[0:720]
                 las.write("Output{}.las".format(current_rotation))
                 print("wrote las")
                 current_rotation += 0.5
                 tic.set_target_position(int(444 * (current_rotation-80))) # 0.139 rev / deg 3200 puls per rev
                 time.sleep(1)
-                shared_points[0:721] = [0]*721
+                shared_points[0:1441] = [0]*1441
 
 
     except KeyboardInterrupt:
