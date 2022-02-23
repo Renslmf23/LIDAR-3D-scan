@@ -8,6 +8,8 @@ from multiprocessing import Process, Array
 import ctypes as c
 import pylas
 
+precision = 0.5 # Increase angle with this number every X rotations
+scan_amount = 10 # Move after X scans
 
 def plot_scatter(points, sc, fig):
     sc.set_offsets(points)
@@ -184,18 +186,19 @@ if __name__ == "__main__":
         t.start()
 
         while t.is_alive():
-            if shared_points[1440] > 30:
+            if shared_points[1440] > scan_amount:
                 las = pylas.create()
                 angle_multiplier = cos(radians(current_rotation))
                 las.X = [element * -1 * angle_multiplier for element in shared_points[0:720]]
                 las.Z = shared_points[720:1440]
                 las.Y = shared_points[0:720]
                 las.write("Output{}.las".format(current_rotation))
-                print("wrote las")
-                current_rotation += 1
+                print("Moving to next scan")
+                current_rotation += precision
                 tic.set_target_position(int(444 * (current_rotation - 80)))
                 while tic.get_current_position() < int(444 * (current_rotation - 80)) - 20:
                     continue
+                print("Reached target position")
                 shared_points[0:1441] = [0] * 1441
                 if current_rotation > 170:
                     t.kill()
