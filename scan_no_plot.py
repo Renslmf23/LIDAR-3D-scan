@@ -149,13 +149,13 @@ def go_to_pos(target_position, tic):
         elif offset < -2:
             tic.set_target_velocity(20000000)
         elif offset > 1:
-            tic.set_target_velocity(-500000)
+            tic.set_target_velocity(-5000000)
         elif offset < -1:
-            tic.set_target_velocity(500000)
+            tic.set_target_velocity(5000000)
         elif offset > 0.5:
-            tic.set_target_velocity(-100000)
+            tic.set_target_velocity(-1000000)
         elif offset < -0.5:
-            tic.set_target_velocity(100000)
+            tic.set_target_velocity(1000000)
         else:
             tic.set_target_velocity(0)
             correct_setting_count += 1
@@ -166,7 +166,7 @@ def go_to_pos(target_position, tic):
 if __name__ == "__main__":
     try:
         # Choose the serial port name.
-        port_name = "/dev/ttyUSB0"
+        port_name = "/dev/ttyUSB1"
         baud_rate = 9600
         device_number = None
         port = serial.Serial(port_name, baud_rate, timeout=0.1, write_timeout=0.1)
@@ -192,9 +192,10 @@ if __name__ == "__main__":
                 las.Y = shared_points[0:720]
                 las.write("Output{}.las".format(current_rotation))
                 print("wrote las")
-                current_rotation += 0.5
+                current_rotation += 1
                 tic.set_target_position(int(444 * (current_rotation - 80)))
-                time.sleep(1)
+                while tic.get_current_position() < int(444 * (current_rotation - 80)) - 20:
+                    continue
                 shared_points[0:1441] = [0] * 1441
                 if current_rotation > 170:
                     t.kill()
