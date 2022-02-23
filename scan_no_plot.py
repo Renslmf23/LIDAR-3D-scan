@@ -166,7 +166,7 @@ def go_to_pos(target_position, tic):
 if __name__ == "__main__":
     try:
         # Choose the serial port name.
-        port_name = "/dev/ttyUSB1"
+        port_name = "/dev/ttyAMA0"
         baud_rate = 9600
         device_number = None
         port = serial.Serial(port_name, baud_rate, timeout=0.1, write_timeout=0.1)

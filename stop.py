@@ -1,7 +1,5 @@
 from pyrplidar import PyRPlidar
-import time
-import matplotlib as plt
-from math import *
+
 def disconnect():
     lidar = PyRPlidar()
     lidar.connect(port="/dev/ttyUSB0", baudrate=256000, timeout=3)
