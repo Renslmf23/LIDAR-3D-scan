@@ -154,10 +154,10 @@ def go_to_pos(target_position, tic):
             tic.set_target_velocity(-500000)
         elif offset < -1:
             tic.set_target_velocity(500000)
-        elif offset > 0.4:
-            tic.set_target_velocity(-50000)
-        elif offset < -0.4:
-            tic.set_target_velocity(50000)
+        elif offset > 0.5:
+            tic.set_target_velocity(-100000)
+        elif offset < -0.5:
+            tic.set_target_velocity(100000)
         else:
             tic.set_target_velocity(0)
             correct_setting_count += 1
@@ -198,6 +198,8 @@ if __name__ == "__main__":
                 tic.set_target_position(int(444 * (current_rotation - 80)))
                 time.sleep(1)
                 shared_points[0:1441] = [0] * 1441
+                if current_rotation > 170:
+                    t.kill()
 
 
     except KeyboardInterrupt:
