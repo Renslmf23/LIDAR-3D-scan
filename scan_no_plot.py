@@ -187,7 +187,7 @@ if __name__ == "__main__":
             if shared_points[1440] > 30:
                 las = pylas.create()
                 angle_multiplier = cos(radians(current_rotation))
-                las.X = [element * angle_multiplier for element in shared_points[0:720]]
+                las.X = [element * -1 * angle_multiplier for element in shared_points[0:720]]
                 las.Z = shared_points[720:1440]
                 las.Y = shared_points[0:720]
                 las.write("Output{}.las".format(current_rotation))
