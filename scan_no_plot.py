@@ -178,7 +178,7 @@ if __name__ == "__main__":
         go_to_pos(current_rotation, tic)
         tic.reset_position()
         tic.exit_safe_start()
-
+        print("TIC started!")
         rplidar = RPLidar()
 
         shared_points = Array(c.c_float, 360 * 4 + 1)
