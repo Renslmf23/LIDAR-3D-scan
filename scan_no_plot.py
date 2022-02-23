@@ -1,3 +1,5 @@
+
+
 from pyrplidar import PyRPlidar
 import time
 import serial
@@ -170,12 +172,12 @@ if __name__ == "__main__":
         baud_rate = 9600
         device_number = None
         port = serial.Serial(port_name, baud_rate, timeout=0.1, write_timeout=0.1)
-        tic_serial = TicSerial(port, device_number)
-        current_pos_accurate()
+        tic = TicSerial(port, device_number)
+        print(current_pos_accurate())
         current_rotation = 80
-        go_to_pos(current_rotation, tic_serial)
-        tic_serial.reset_position()
-        tic_serial.exit_safe_start()
+        go_to_pos(current_rotation, tic)
+        tic.reset_position()
+        tic.exit_safe_start()
 
         rplidar = RPLidar()
 
@@ -193,7 +195,7 @@ if __name__ == "__main__":
                 las.write("Output{}.las".format(current_rotation))
                 print("wrote las")
                 current_rotation += 0.5
-                tic_serial.set_target_position(int(444 * (current_rotation - 80)))
+                tic.set_target_position(int(444 * (current_rotation - 80)))
                 time.sleep(1)
                 shared_points[0:1441] = [0] * 1441
 
