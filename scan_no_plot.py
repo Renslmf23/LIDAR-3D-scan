@@ -5,6 +5,7 @@ from math import *
 import stop
 import numpy as np
 from multiprocessing import Process, Array
+import subprocess
 import ctypes as c
 import pylas
 
@@ -200,6 +201,8 @@ if __name__ == "__main__":
                     continue
                 print("Reached target position")
                 shared_points[0:1441] = [0] * 1441
+                if current_rotation%5 == 0:
+                    subprocess.run(['fswebcam', "-r", "1280x720", "--no-banner", "image{}.jpg".format(current_rotation)])
                 if current_rotation > 170:
                     t.kill()
 
